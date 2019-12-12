@@ -9,6 +9,8 @@
 #include <netdb.h>
 #include <unistd.h>
 
+
+
 int main(int argc, char *argv[]) {
     if (argc < 3) {
         printError("Client has to be started with the following arguments: address port.");
@@ -42,21 +44,29 @@ int main(int argc, char *argv[]) {
     }
     
     printf("Server connection has been established.\n");
-    char buffer[BUFFER_LENGTH + 1];
-    buffer[BUFFER_LENGTH] = '\0';
+    char serverBuffer[BUFFER_LENGTH + 1];
+    serverBuffer[BUFFER_LENGTH] = '\0';
+    int buffer[ARRAY_LENGTH];
     int koniec = 0;
     while (!koniec) {
-        fgets(buffer, BUFFER_LENGTH, stdin);
-        char* pos = strchr(buffer, '\n');
-        if (pos != NULL) {
-            *pos = '\0';
-        }
+        printf("Insert cordinates from 1 to 3:  \n x: ");
+        scanf("%d", &buffer[0]);
+        printf(" y: ");
+        scanf("%d", &buffer[1]);
+        printf("x %d\n", buffer[0]);
+
+        // fgets(buffer, BUFFER_LENGTH, stdin);
+        // char* pos = strchr(buffer, '\n');
+        // if (pos != NULL) {
+        //     *pos = '\0';
+        // }
         //writing data to socket <unistd.h>
-		write(sock, buffer, strlen(buffer) + 1);
-        if (strcmp(buffer, endMsg) != 0) {
+		write(sock, buffer, ARRAY_LENGTH);
+        //if (strcmp(buffer, endMsg) != 0) {
+        if(buffer[0] != 9){
             //reading data from socket <unistd.h>
 			read(sock, buffer, BUFFER_LENGTH);
-            printf("Server has sent the following data:\n%s\n", buffer);
+            printf("Server has sent the following data: \n %s\n", serverBuffer);
         }
         else {
             koniec = 1;

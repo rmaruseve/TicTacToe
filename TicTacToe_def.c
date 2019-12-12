@@ -1,47 +1,48 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "TicTacToe_def.h"
+//#include "k_s_definitions.h"
 
 char matrix[3][3];  /* the tic tac toe matrix */
 
-char check(void);
-void init_matrix(void);
-void get_player_move(void);
-void get_computer_move(void);
-void disp_matrix(void);
 
-int main(void)
+
+/*int main(void)
 {
   char done;
 
   printf("This is the game of Tic Tac Toe.\n");
-  printf("You will be playing against the computer.\n");
 
-  done =  ' ';
-  init_matrix();
 
-   while(done == ' ')  /* see if winner */
+    done =  ' ';
+    init_matrix();
+
+    while(done == ' ')  
    {
     disp_matrix();
     get_player_move();
     disp_matrix();
-    done = check(); /* see if winner */
+    done = check(); 
    
-    if(done!= ' ') break; /* winner!*/
+    if(done!= ' ') break; 
    
-    getplayer2move();
+    
     done = check();
    }
    
  
 
-  if(done=='X') printf("You won!\n");
-  else printf("Player 2 won!!!!\n");
-  disp_matrix(); /* show final positions */
-
+  if(done=='X')
+	  printf("You won!\n");
+  else 
+	  printf("I won!!!!\n");
+  
+  disp_matrix(); 
+  
   return 0;
 }
+*/
 
-/* Initialize the matrix. */
 void init_matrix(void)
 {
  
@@ -51,45 +52,41 @@ void init_matrix(void)
     for(j=0; j<3; j++) matrix[i][j] =  ' ';
 }
 
-/* Get a player's move. */
-void get_player_move(void)
+
+void get_server_move(void)
 {
   int x, y;
-  printf("Turn of player 1!\n");
+  printf("Turn of server!\n");
   printf("Enter X,Y coordinates for your move: ");
   scanf("%d%*c%d", &x, &y);
 
   x--; y--;
-
   if(matrix[x][y]!= ' '){
     printf("Invalid move, try again.\n");
-    get_player_move();
-  }
-  else matrix[x][y] = 'X';
- 
-  checkifdraw();
-}
+    get_server_move_move();
 
-void getplayer2move(void)
-{
-  checkifdraw();
-  int x, y;
-  printf("Turn of player 2!\n");
-  printf("Enter X,Y coordinates for your move: ");
-  scanf("%d%*c%d", &x, &y);
-
-  x--; y--;
-
-  if(matrix[x][y]!= ' '){
-    printf("Invalid move, try again.\n");
-    getplayer2move();
   }
   else matrix[x][y] = 'O';
  
-  checkifdraw();
+  //checkifdraw();
 }
 
-void checkifdraw(void)
+int getclientmove(int x,int y)
+{
+
+  x--; y--;
+
+  if(matrix[x][y]!= ' '){
+  return -1;
+  }
+  else matrix[x][y] = 'X';
+ 
+ 
+  //checkifdraw(buffer);
+  return 1;
+}
+
+int checkifdraw(char* buffer)
 {
   int i, j;
   for(i=0; i<3; i++){
@@ -100,14 +97,27 @@ void checkifdraw(void)
 
   if(i*j==9)  {
     printf("draw\n");
-    disp_matrix();
-    exit(0);
+	strcpy(buffer,"draw\n",300);
+	return -1;
   }
- 
+ return 1;
 }
 
+void disp_matrix_client(char* buffer)
+{
+	char line[100];
+	int t;
+	for(t=0; t<3; t++) 
+	{
+	sprintf(line,"%c | %c | %c ",matrix[t][0], matrix[t][1], matrix [t][2]);
+	strcat(buffer,line);		
+  
+    if(t!=2)
+		strcat(buffer,"\n---|---|---\n");
+	}
 
-/* Display the matrix on the screen. */
+	strcat(buffer,"\n");
+}
 void disp_matrix(void)
 {
   int t;
@@ -120,20 +130,20 @@ void disp_matrix(void)
   printf("\n");
 }
 
-/* See if there is a winner. */
+
 char check(void)
 {
   int i;
 
-  for(i=0; i<3; i++)  /* check rows */
+  for(i=0; i<3; i++)  
     if(matrix[i][0]==matrix[i][1] &&
        matrix[i][0]==matrix[i][2]) return matrix[i][0];
 
-  for(i=0; i<3; i++)  /* check columns */
+  for(i=0; i<3; i++)  
     if(matrix[0][i]==matrix[1][i] &&
        matrix[0][i]==matrix[2][i]) return matrix[0][i];
 
-  /* test diagonals */
+  
   if(matrix[0][0]==matrix[1][1] &&
      matrix[1][1]==matrix[2][2])
        return matrix[0][0];

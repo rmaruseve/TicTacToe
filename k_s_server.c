@@ -1,4 +1,6 @@
 #include "k_s_definitions.h"
+#include "TicTacToe_def.h"
+#define ARRAY_LENGTH 2
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,17 +66,100 @@ int main(int argc, char** argv) {
     }
 	
     printf("Client has connected to the server.\n");
-    char buffer[BUFFER_LENGTH + 1];
-    buffer[BUFFER_LENGTH] = '\0';
+	
+	char done=' ';
+
+	/*
+	printf("This is the game of Tic Tac Toe.\n");
+	init_matrix();
+
+	
+	
+	
+    char clientbuffer[BUFFER_LENGTH + 1];
+    clientbuffer[BUFFER_LENGTH] = '\0';
+	
+	int buffer[2];
+    int koniec = 0;
+	
+	 while (!koniec) {
+        //reading data from socket <unistd.h>
+		disp_matrix();
+		disp_matrix_client(buffer)
+		printf("Give the coordinates!x:");
+		read(clientSocket, buffer, 2);
+		if (buffer!= 9) {
+            printf("Client has sent the following coordinates:%d and %d", buffer[0], buffer[1]);
+			
+			
+            
+			//writing data to socket <unistd.h>
+			write(clientSocket, buffer, sizeof(buffer));
+        }
+        else {
+            koniec = 1;
+        }
+    }
+    printf("Client has terminated communication.\n");
+	*/
+	
+	printf("This is the game of Tic Tac Toe.\n");
+	init_matrix();
+
+    char clientBuffer[BUFFER_LENGTH + 1];
+    clientBuffer[BUFFER_LENGTH] = '\0';
+    strncpy(clientBuffer, "\n-A--B-C-aaaaaaaaaaa\n", BUFFER_LENGTH);
+    clientBuffer[BUFFER_LENGTH] = '\0';
+    int buffer[ARRAY_LENGTH];
     int koniec = 0;
     while (!koniec) {
+		disp_matrix();
+		disp_matrix_client(buffer)
+		write(clientSocket,"Give the coordinates!x:",BUFFER_LENGTH);
         //reading data from socket <unistd.h>
-		read(clientSocket, buffer, BUFFER_LENGTH);
-        if (strcmp(buffer, endMsg) != 0) {
-            printf("Client has sent the following data:\n%s\n", buffer);
-            spracujData(buffer);
-			//writing data to socket <unistd.h>
-			write(clientSocket, buffer, strlen(buffer) + 1);
+		read(clientSocket, buffer, ARRAY_LENGTH);
+        if (buffer[0] != 9) {
+			
+            printf("Client has sent the following data:\n%d, %d\n", buffer[0], buffer[1]);
+			while(done==' ')
+			{		
+				if(getclientmove(buffer[0],buffer[1])==-1)
+				{
+					write(clientSocket,"Give the coordinates!x:",BUFFER_LENGTH);
+					//reading data from socket <unistd.h>
+					read(clientSocket, buffer, ARRAY_LENGTH);
+				}
+				checkifdraw(clientbuffer);
+				/* disp_matrix();
+				disp_matrix_client(clientBuffer);
+				write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
+				
+				done = check();
+				if(done!= ' ')
+					break;
+				
+				
+				get_server_move();
+				checkifdraw(clientbuffer);
+				disp_matrix();
+				disp_matrix_client(clientBuffer);*/
+				write(clientSocket, clientBuffer, strlen(clientBuffer) + 1); 
+				
+				done=check();
+				
+				//spracujData(buffer);
+				//writing data to socket <unistd.h>
+				
+			}
+			
+			if(done=='X') 
+				printf("Client won!\n");
+			else printf("Server won!!!!\n");
+			disp_matrix(); 
+			disp_matrix_client(clientBuffer);
+			write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);/
+			
+			
         }
         else {
             koniec = 1;
@@ -87,3 +172,4 @@ int main(int argc, char** argv) {
     
     return (EXIT_SUCCESS);
 }
+    
