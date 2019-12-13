@@ -7,41 +7,7 @@ char matrix[3][3];  /* the tic tac toe matrix */
 
 
 
-/*int main(void)
-{
-  char done;
 
-  printf("This is the game of Tic Tac Toe.\n");
-
-
-    done =  ' ';
-    init_matrix();
-
-    while(done == ' ')  
-   {
-    disp_matrix();
-    get_player_move();
-    disp_matrix();
-    done = check(); 
-   
-    if(done!= ' ') break; 
-   
-    
-    done = check();
-   }
-   
- 
-
-  if(done=='X')
-	  printf("You won!\n");
-  else 
-	  printf("I won!!!!\n");
-  
-  disp_matrix(); 
-  
-  return 0;
-}
-*/
 
 void init_matrix(void)
 {

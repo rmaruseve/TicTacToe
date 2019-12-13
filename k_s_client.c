@@ -46,8 +46,9 @@ int main(int argc, char *argv[]) {
     printf("Server connection has been established.\n");
     char serverBuffer[BUFFER_LENGTH + 1];
     serverBuffer[BUFFER_LENGTH] = '\0';
-    int buffer[ARRAY_LENGTH];
+    int buffer[ARRAY_LENGTH] = {0};
     int koniec = 0;
+	read(sock, buffer, BUFFER_LENGTH);
     while (!koniec) {
         printf("Insert cordinates from 1 to 3:  \n x: ");
         scanf("%d", &buffer[0]);
@@ -61,12 +62,18 @@ int main(int argc, char *argv[]) {
         //     *pos = '\0';
         // }
         //writing data to socket <unistd.h>
+		
 		write(sock, buffer, ARRAY_LENGTH);
         //if (strcmp(buffer, endMsg) != 0) {
         if(buffer[0] != 9){
             //reading data from socket <unistd.h>
+			printf("Server has sent the following data: \n %s\n", serverBuffer);
 			read(sock, buffer, BUFFER_LENGTH);
-            printf("Server has sent the following data: \n %s\n", serverBuffer);
+            
+			
+			read(sock, buffer, BUFFER_LENGTH);
+			printf("Server has sent the following data: \n %s\n", serverBuffer);
+			
         }
         else {
             koniec = 1;

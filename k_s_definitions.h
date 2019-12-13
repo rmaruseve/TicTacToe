@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#define ARRAY_LENGTH 2
 #define BUFFER_LENGTH 300
 extern char *endMsg;
 
