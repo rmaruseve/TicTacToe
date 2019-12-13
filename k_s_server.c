@@ -11,11 +11,6 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 char matrix[3][3];  /* the tic tac toe matrix */
-
-
-
-
-
 void initMatrix(void)
 {
  
@@ -46,11 +41,54 @@ void getServerMove(void)
   //checkifdraw();
 }
 
-int getClientMove(int x,int y)
+int getClientMove(int position)
 {
-
-  x--; y--;
-
+  printf("Client is playing...\n");
+  int x, y;
+  //x--; y--;
+  if(position == 1){
+	x = 0;
+	y = 0;
+  }
+  else if(position == 1){
+	x = 0;
+	y = 0;
+  }
+  else if(position == 2){
+	x = 0;
+	y = 1;
+  }
+  else if(position == 3){
+	x = 0;
+	y = 2;
+  }
+  else if(position == 4){
+	x = 1;
+	y = 0;
+  }
+  else if(position == 5){
+	x = 1;
+	y = 1;
+  }
+  else if(position == 6){
+	x = 1;
+	y = 2;
+  }
+  else if(position == 7){
+	x = 2;
+	y = 0;
+  }
+  else if(position == 8){
+	x = 2;
+	y = 1;
+  }
+  else if(position == 9){
+	x = 2;
+	y = 2;
+  }
+  else {
+	return -1;
+  }
   if(matrix[x][y]!= ' '){
   return -1;
   }
@@ -79,6 +117,7 @@ int checkIfDraw()
 
 void dispMatrixClient(char* buffer)
 {
+	strcpy(buffer, "\n");
 	char line[100];
 	int t;
 	for(t=0; t<3; t++) 
@@ -175,41 +214,19 @@ int main(int argc, char** argv) {
 	char done=' ';
 
 
-
-	/*printf("Client has connected to the server.\n");
-    char clientBuffer[BUFFER_LENGTH + 1];
-    clientBuffer[BUFFER_LENGTH] = '\0';
-    strncpy(clientBuffer, "\n-A--B-C-aaaaaaaaaaa\n", BUFFER_LENGTH);
-    clientBuffer[BUFFER_LENGTH] = '\0';
-    int buffer[ARRAY_LENGTH];
-    int koniec = 0;
-    while (!koniec) {
-        //reading data from socket <unistd.h>
-		read(clientSocket, buffer, ARRAY_LENGTH);
-        if (buffer[0] != 9) {
-            printf("Client has sent the following data:\n%d, %d\n", buffer[0], buffer[1]);
-            //spracujData(buffer);
-			//writing data to socket <unistd.h>
-            printf("data: %s", clientBuffer);
-			write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
-        }
-        else {
-            koniec = 1;
-        }
-    }
-    printf("Client has terminated communication.\n");*/
 	char clientBuffer[BUFFER_LENGTH + 1];
     clientBuffer[BUFFER_LENGTH] = '\0';
 	printf("This is the game of Tic Tac Toe.\n");
 	initMatrix();
 	dispMatrix();
-	dispMatrixClient(clientBuffer);
-	write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
+	//dispMatrixClient(clientBuffer);
+	//write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
 	
     
     strncpy(clientBuffer, "-A--B-Ca\n", BUFFER_LENGTH);
     clientBuffer[BUFFER_LENGTH] = '\0';
-    int buffer[ARRAY_LENGTH] = {0};
+    //int buffer[ARRAY_LENGTH] = {0};
+	int position;
     int koniec = 0;
     while (!koniec) {
 		//disp_matrix();
@@ -218,63 +235,71 @@ int main(int argc, char** argv) {
 
         //reading data from socket <unistd.h>
 		
-		read(clientSocket, buffer, ARRAY_LENGTH);
-		
-        if (buffer[0] != 9) {
-			
-			
-            printf("Client has sent the following data:\n%d, %d\n", buffer[0], buffer[1]);
 			while(done==' ')
 			{		
-				getClientMove(buffer[0],buffer[1]);
-				if(checkIfDraw(clientBuffer)==-1)
-				{
-					write(clientSocket,"It is a draw!\n",BUFFER_LENGTH);
+				read(clientSocket, &position, ARRAY_LENGTH);
+				printf("Client has sent the following data:\n%d\n", position);
+				if (position != 69) {
+						getClientMove(position);
+						if(checkIfDraw(clientBuffer) == -1)
+						{
+							write(clientSocket, "It is a draw!\n", BUFFER_LENGTH);
+						}
+						else
+						{	
+							dispMatrix();
+							dispMatrixClient(clientBuffer);
+							write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
+						}
+						
+							done = check();
+							if (done != ' ')
+							break;
+						
+						
+						getServerMove();
+						if(checkIfDraw(clientBuffer) == -1)
+						{
+							write(clientSocket, "It is a draw!\n", BUFFER_LENGTH);
+						}
+						
+						else
+						{		
+							dispMatrix();
+							dispMatrixClient(clientBuffer);
+							write(clientSocket, clientBuffer, strlen(clientBuffer) + 1); 
+						}
+						
+						done=check();
+						
+						
+						//writing data to socket <unistd.h>*/
 				}
-				else
-				{	
-					dispMatrix();
-					dispMatrixClient(clientBuffer);
-					write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
+				else {
+					koniec = 1;
 				}
-				
-					done = check();
-					if (done != ' ')
-					break;
-				
-				
-				getServerMove();
-				if(checkIfDraw(clientBuffer)==-1)
-				{
-					write(clientSocket,"It is a draw!\n",BUFFER_LENGTH);
-				}
-				
-				else
-				{		
-					dispMatrix();
-					dispMatrixClient(clientBuffer);
-					write(clientSocket, clientBuffer, strlen(clientBuffer) + 1); 
-				}
-				
-				done=check();
-				
-				
-				//writing data to socket <unistd.h>*/
 
 			}
 			
-			if(done=='X') 
-				printf("Client won!!!!\n");
-			else printf("Server won!!!!\n");
-			dispMatrix(); 
-			dispMatrixClient(clientBuffer);
-			write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);	
+			if(done == 'X') {
+				printf("Client won!\n");
+				dispMatrix(); 
+				dispMatrixClient(clientBuffer);
+				strcat(clientBuffer, "Client won!\n");
+				write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
+			}
+			else if(done == 'O'){
+				printf("Server won!\n");
+				dispMatrix(); 
+				dispMatrixClient(clientBuffer);
+				strcat(clientBuffer, "Server won!\n");
+				write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
+			}
+			
+				
 			
 			
-        }
-        else {
-            koniec = 1;
-        }
+        
     }
     printf("Client has terminated communication.\n");
     

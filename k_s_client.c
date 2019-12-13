@@ -44,17 +44,19 @@ int main(int argc, char *argv[]) {
     }
     
     printf("Server connection has been established.\n");
+	printf("This is the game of tic tac toe.\n");
     char serverBuffer[BUFFER_LENGTH + 1];
     serverBuffer[BUFFER_LENGTH] = '\0';
-    int buffer[ARRAY_LENGTH] = {0};
+    //int buffer[ARRAY_LENGTH] = {0};
+	int position;
     int koniec = 0;
-	read(sock, buffer, BUFFER_LENGTH);
+	//read(sock, buffer, BUFFER_LENGTH);
     while (!koniec) {
-        printf("Insert cordinates from 1 to 3:  \n x: ");
-        scanf("%d", &buffer[0]);
-        printf(" y: ");
-        scanf("%d", &buffer[1]);
-        printf("x %d\n", buffer[0]);
+        printf("Insert cordinates from 1 to 9 or 69 for exit:  \n position: ");
+        scanf("%d", &position);
+        //printf(" y: ");
+        //scanf("%d", &buffer[1]);
+        printf("x %d\n", position);
 
         // fgets(buffer, BUFFER_LENGTH, stdin);
         // char* pos = strchr(buffer, '\n');
@@ -63,15 +65,15 @@ int main(int argc, char *argv[]) {
         // }
         //writing data to socket <unistd.h>
 		
-		write(sock, buffer, ARRAY_LENGTH);
+		write(sock, &position, ARRAY_LENGTH);
         //if (strcmp(buffer, endMsg) != 0) {
-        if(buffer[0] != 9){
+        if(position != 69){
             //reading data from socket <unistd.h>
+			read(sock, serverBuffer, BUFFER_LENGTH);
 			printf("Server has sent the following data: \n %s\n", serverBuffer);
-			read(sock, buffer, BUFFER_LENGTH);
-            
 			
-			read(sock, buffer, BUFFER_LENGTH);
+			
+			read(sock, serverBuffer, BUFFER_LENGTH);
 			printf("Server has sent the following data: \n %s\n", serverBuffer);
 			
         }
