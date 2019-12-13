@@ -109,8 +109,7 @@ int checkIfDraw()
   }
 
   if(i*j==9)  {
-    printf("draw");
-	return -1;
+	return 2;
   }
  return 1;
 }
@@ -228,7 +227,25 @@ int main(int argc, char** argv) {
     //int buffer[ARRAY_LENGTH] = {0};
 	int position;
     int koniec = 0;
-    while (!koniec) {
+    while (!koniec) \
+	{
+		
+		if (done=='E')
+		{	
+			strcpy(clientBuffer, "Press 10 for New Game\n Press 11 for Exit");
+			write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
+			read(clientSocket, &position, ARRAY_LENGTH);
+			if(position==10)
+			{
+				done=(' ');
+			}
+			else
+			{
+				koniec = 1;
+			}	
+	
+			
+		}
 		//disp_matrix();
 		//disp_matrix_client(clientBuffer);
 		//write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);	
@@ -241,9 +258,13 @@ int main(int argc, char** argv) {
 				printf("Client has sent the following data:\n%d\n", position);
 				if (position != 69) {
 						getClientMove(position);
-						if(checkIfDraw(clientBuffer) == -1)
+						if(checkIfDraw() == 2)
 						{
-							write(clientSocket, "It is a draw!\n", BUFFER_LENGTH);
+							dispMatrix();
+							dispMatrixClient(clientBuffer);
+							write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
+							done='D';
+							break;
 						}
 						else
 						{	
@@ -258,9 +279,13 @@ int main(int argc, char** argv) {
 						
 						
 						getServerMove();
-						if(checkIfDraw(clientBuffer) == -1)
+						if(checkIfDraw() == 2)
 						{
-							write(clientSocket, "It is a draw!\n", BUFFER_LENGTH);
+							dispMatrix();
+							dispMatrixClient(clientBuffer);
+							write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
+							done='D';
+							break;
 						}
 						
 						else
@@ -278,23 +303,46 @@ int main(int argc, char** argv) {
 				else {
 					koniec = 1;
 				}
-
+					
+				
 			}
-			
 			if(done == 'X') {
-				printf("Client won!\n");
-				dispMatrix(); 
-				dispMatrixClient(clientBuffer);
-				strcat(clientBuffer, "Client won!\n");
-				write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
-			}
-			else if(done == 'O'){
-				printf("Server won!\n");
-				dispMatrix(); 
-				dispMatrixClient(clientBuffer);
-				strcat(clientBuffer, "Server won!\n");
-				write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
-			}
+				
+					
+					
+					
+					printf("Client won!\n");
+					done='E';
+					dispMatrix(); 
+					dispMatrixClient(clientBuffer);
+					strcat(clientBuffer, "Client won!\n");
+					write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
+					
+			
+				}
+				else if(done == 'O'){
+				
+					printf("Server won!\n");
+					done='E';
+					dispMatrix(); 
+					dispMatrixClient(clientBuffer);
+					strcat(clientBuffer, "Server won!\n");
+					write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
+					
+				}	
+				
+				else if(done == 'D'){
+				
+					printf("DRAW!\n");
+					done='E';
+					dispMatrix(); 
+					dispMatrixClient(clientBuffer);
+					strcat(clientBuffer, "Client won!\n");
+					write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
+					
+				}
+			
+			
 			
 				
 			

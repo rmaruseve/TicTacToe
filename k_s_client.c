@@ -76,6 +76,8 @@ int main(int argc, char *argv[]) {
 			read(sock, serverBuffer, BUFFER_LENGTH);
 			printf("Server has sent the following data: \n %s\n", serverBuffer);
 			
+			
+			
         }
         else {
             koniec = 1;
