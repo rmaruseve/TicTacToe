@@ -6,6 +6,7 @@
 
 char *errorMsg = "ERROR";
 int endMsg = 69;
+
 //char *endMsg = ":end";
 
 void printError(char *str) {

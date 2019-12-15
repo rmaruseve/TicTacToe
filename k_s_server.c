@@ -35,7 +35,7 @@ void getServerMove(void)
 		getServerMove();
 	}
 	else matrix[x][y] = 'O';
-	//checkifdraw();
+
 }
 
 int getClientMove(int position)
@@ -257,6 +257,9 @@ int main(int argc, char** argv) {
 					}
 				}
 				if ((done = check()) != ' '){
+					/*strcat(clientBuffer, "BIGgggggggggTest");
+					write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);*/
+
 					break;
 				}
 				//server turn
@@ -285,7 +288,6 @@ int main(int argc, char** argv) {
 
 			printf("Client won!\nClient can start new game.\n");
 			strcat(clientBuffer, "Client won!\nYou can start new game.\n");
-			write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
 		
 			initMatrix();
 			strcpy(clientBuffer, "");
@@ -309,15 +311,13 @@ int main(int argc, char** argv) {
 
 			printf("DRAW!\nClient can start new game.\n");
 			strcat(clientBuffer, "DRAW! \nYou can start new game.\n");
-			write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
-			
+		
 			initMatrix();
 			strcpy(clientBuffer, "");
 		}
 	}
 	printf("Client has terminated communication.\n");
 
-	//closing client socket <unistd.h>
 	close(clientSocket);
 
 	return (EXIT_SUCCESS);

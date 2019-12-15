@@ -24,7 +24,6 @@ int checkInput(void) {
 		else {
 			validInput = 1;
 		}
-		printf("Position: %d\n", position);
 	}
 	return position;
 }
@@ -72,6 +71,7 @@ int main(int argc, char *argv[]) {
 	printf("Server has sent the following data: \n %s \n ", serverBuffer);
 
 	while (!koniec) {
+		printf("\nwe are starting new game....\n");
 		position = checkInput();
 		write(sock, &position, ARRAY_LENGTH);
 
@@ -79,6 +79,7 @@ int main(int argc, char *argv[]) {
 		{
 			validMove = 0;
 			while (!validMove) {
+				
 				//reading data from socket <unistd.h>
 				read(sock, serverBuffer, BUFFER_LENGTH);
 				if (strcmp(serverBuffer, errorMsg) == 0)
@@ -92,10 +93,12 @@ int main(int argc, char *argv[]) {
 					validMove = 1;
 				}
 			}
-			printf("Server has sent the following data: \n %s\n", serverBuffer);
+			printf("1st Read...\nServer has sent the following data: \n %s\n", serverBuffer);
+
+			
 
 			read(sock, serverBuffer, BUFFER_LENGTH);
-			printf("Server has sent the following data: \n %s\n", serverBuffer);
+			printf("2nd Read...\nServer has sent the following data: \n %s\n", serverBuffer);
 			koniec = 0;
 		}
 		else {
