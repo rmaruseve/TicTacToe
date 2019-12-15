@@ -1,6 +1,5 @@
-#include "k_s_definitions.h"
 //#include "TicTacToe_def.h"
-
+#include "k_s_definitions.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,16 +9,16 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+
 char matrix[3][3];  /* the tic tac toe matrix */
+
 void initMatrix(void)
 {
-
 	int i, j;
 
 	for (i = 0; i < 3; i++)
 		for (j = 0; j < 3; j++) matrix[i][j] = ' ';
 }
-
 
 void getServerMove(void)
 {
@@ -29,15 +28,13 @@ void getServerMove(void)
 	scanf("%d", &x);
 	printf(" y: ");
 	scanf("%d", &y);
-
 	x--; y--;
+	
 	if (matrix[x][y] != ' ') {
 		printf("Invalid move, try again.\n");
 		getServerMove();
-
 	}
 	else matrix[x][y] = 'O';
-
 	//checkifdraw();
 }
 
@@ -89,12 +86,11 @@ int getClientMove(int position)
 	else {
 		return -1;
 	}
+
 	if (matrix[x][y] != ' ') {
 		return -1;
 	}
 	else matrix[x][y] = 'X';
-
-
 	//checkifdraw(buffer);
 	return 1;
 }
@@ -127,7 +123,6 @@ void dispMatrixClient(char* buffer)
 		if (t != 2)
 			strcat(buffer, "\n---|---|---\n");
 	}
-
 	strcat(buffer, "\n");
 }
 void dispMatrix(void)
@@ -155,7 +150,6 @@ char check(void)
 		if (matrix[0][i] == matrix[1][i] &&
 			matrix[0][i] == matrix[2][i]) return matrix[0][i];
 
-
 	if (matrix[0][0] == matrix[1][1] &&
 		matrix[1][1] == matrix[2][2])
 		return matrix[0][0];
@@ -163,7 +157,6 @@ char check(void)
 	if (matrix[0][2] == matrix[1][1] &&
 		matrix[1][1] == matrix[2][0])
 		return matrix[0][2];
-
 
 	if (checkIfDraw() == 2)
 	{
@@ -215,157 +208,112 @@ int main(int argc, char** argv) {
 	}
 
 	printf("Client has connected to the server.\n");
-
-	char done = ' ';
-
-
-	char clientBuffer[BUFFER_LENGTH + 1];
-	clientBuffer[BUFFER_LENGTH] = '\0';
 	printf("This is the game of Tic Tac Toe.\n");
 	initMatrix();
-	
-	//dispMatrixClient(clientBuffer);
-	//write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
-
+	//DO NOT CHANGE ORDER
+	char done = ' ';
+	char clientBuffer[BUFFER_LENGTH + 1];
+	clientBuffer[BUFFER_LENGTH] = '\0';
 
 	strncpy(clientBuffer, "-A--B-Ca\n", BUFFER_LENGTH);
 	clientBuffer[BUFFER_LENGTH] = '\0';
+	int koniec = 0, position, validMove;
 	//int buffer[ARRAY_LENGTH] = {0};
-	int position;
-	int koniec = 0;
-	while (!koniec) \
-	{
+	//^^DO NOT CHANGE ORDER^^
 
+	while (!koniec) 
+	{
 		dispMatrix();
 		dispMatrixClient(clientBuffer);
 		write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
 
-		//reading data from socket <unistd.h>
-
 		while (done == ' ')
 		{
+			//reading data from socket <unistd.h>
+			//client move
 			read(clientSocket, &position, ARRAY_LENGTH);
 			printf("Client has sent the following data:\n%d\n", position);
-			if (position != 69) {
-
-		
-				int something = 0;
-				while (!something) {
+			if (position != endMsg) {
+				validMove = 0;
+				while (!validMove) {
 					if (getClientMove(position) == -1)
 					{
-
 						printf("ERROR find %d", &position);
 						strcpy(clientBuffer, "");
 						strcpy(clientBuffer, errorMsg);
 						write(clientSocket, clientBuffer, BUFFER_LENGTH);
 						read(clientSocket, &position, BUFFER_LENGTH);
 
-						if (position == 69)
-						{
-
+						if (position == endMsg) {
 							koniec = 1;
-							something = 1;
+							validMove = 1;
 						}
-						else  if (getClientMove(position) != -1) 
-						{
-							something = 1;
+						else  if (getClientMove(position) != -1) {
+							validMove = 1;
 						}
 					}
-
-					else
-					{
-						something = 1;
+					else {
+						validMove = 1;
 					}
-
 				}
-				done = check();
-				if (done != ' ')
-				{
-					
+				if ((done = check()) != ' '){
 					break;
 				}
-
+				//server turn
 				dispMatrix();
 				dispMatrixClient(clientBuffer);
 				write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
-
 				getServerMove();
 
-				done = check();
-				if (done != ' ')
-				{
+				if ((done = check()) != ' ') {
 					break;
 				}
-		
 
 				dispMatrix();
 				dispMatrixClient(clientBuffer);
 				write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
-
-
-
 			}
-			else
-			{
+			else {
 				koniec = 1;
 				done = 'B';
 			}
-
-
 		}
 		if (done == 'X') {
-
-			printf("Client won!\n");
 			done = ' ';
 			dispMatrix();
 			dispMatrixClient(clientBuffer);
 
-			strcat(clientBuffer, "Client won!\n");
+			printf("Client won!\nClient can start new game.\n");
+			strcat(clientBuffer, "Client won!\nYou can start new game.\n");
 			write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
-
 		
 			initMatrix();
 			strcpy(clientBuffer, "");
-		
-
-
 		}
 		else if (done == 'O') {
-
-			printf("Server won!\n");
 			done = ' ';
 			dispMatrix();
 			dispMatrixClient(clientBuffer);
 
-			strcat(clientBuffer, "Server won!\n");
+			printf("Server won!\nClient can start new game.\n");
+			strcat(clientBuffer, "Server won!\nYou can start new game.\n");
 			write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
 
 			initMatrix();
 			strcpy(clientBuffer, "");
-
 		}
-
 		else if (done == 'D') {
-
-			printf("DRAW!\n");
 			done = ' ';
 			dispMatrix();
 			dispMatrixClient(clientBuffer);
 
-			strcat(clientBuffer, "DRAW! \n");
+			printf("DRAW!\nClient can start new game.\n");
+			strcat(clientBuffer, "DRAW! \nYou can start new game.\n");
 			write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
 			
 			initMatrix();
 			strcpy(clientBuffer, "");
-
 		}
-
-
-
-
-
-
-
 	}
 	printf("Client has terminated communication.\n");
 

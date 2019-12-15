@@ -7,12 +7,10 @@ extern "C" {
 
 #define ARRAY_LENGTH 2
 #define BUFFER_LENGTH 300
-extern char *endMsg;
+extern int endMsg;
 extern char *errorMsg;
 
 void printError(char *str);
-
-
 
 #ifdef	__cplusplus
 }

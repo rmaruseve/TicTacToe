@@ -4,12 +4,9 @@
 #include <stdlib.h>
 #include <errno.h>
 
-
-//int invalidMove = 0;
 char *errorMsg = "ERROR";
-
-char *endMsg = ":end";
-
+int endMsg = 69;
+//char *endMsg = ":end";
 
 void printError(char *str) {
     if (errno != 0) {

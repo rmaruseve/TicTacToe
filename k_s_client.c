@@ -1,5 +1,4 @@
 #include "k_s_definitions.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,7 +8,26 @@
 #include <netdb.h>
 #include <unistd.h>
 
-
+int checkInput(void) {
+	int validInput = 0, position;
+	while (!validInput) {
+		printf("Insert cordinates from 1 to 9 or %d for exit:  \n position: ", endMsg);
+		scanf("%d", &position);
+		if (position < 1 || position > 9) {
+			if (position == endMsg) {
+				validInput = 1;
+			}
+			else {
+				printf("Invalid input. ");
+			}
+		}
+		else {
+			validInput = 1;
+		}
+		printf("Position: %d\n", position);
+	}
+	return position;
+}
 
 int main(int argc, char *argv[]) {
 	if (argc < 3) {
@@ -43,62 +61,36 @@ int main(int argc, char *argv[]) {
 		printError("Error - connect.");
 	}
 
-	printf("Server connection has been established.\n");
-	printf("This is the game of tic tac toe.\n");
+	//int buffer[ARRAY_LENGTH] = {0};
 	char serverBuffer[BUFFER_LENGTH + 1];
 	serverBuffer[BUFFER_LENGTH] = '\0';
-	//int buffer[ARRAY_LENGTH] = {0};
-	int position;
-	int koniec = 0, input;
-	//read(sock, buffer, BUFFER_LENGTH);
+	int koniec = 0, validMove, position;
+
+	printf("Server connection has been established.\n");
+	printf("This is the game of tic tac toe.\n");
 	read(sock, serverBuffer, BUFFER_LENGTH);
 	printf("Server has sent the following data: \n %s \n ", serverBuffer);
 
 	while (!koniec) {
-		input = 0;
-		while (!input) {
-			printf("Insert cordinates from 1 to 9 or 69 for exit:  \n position: ");
-			scanf("%d", &position);
-			if (position < 1 || position > 9)
-			{
-				if (position == 69 || position == 10)
-				{
-					input = 1;
-				}
-			}
-			else
-			{
-				input = 1;
-			}
-			//printf(" y: ");
-			//scanf("%d", &buffer[1]);
-			printf("x %d\n", position);
-		}
-
-		printf("x %d\n", position);
-
+		position = checkInput();
 		write(sock, &position, ARRAY_LENGTH);
 
-		//if (strcmp(buffer, endMsg) != 0) {
-		if (position != 69 )
+		if (position != endMsg)
 		{
-			int something = 0;
-			while (!something) {
+			validMove = 0;
+			while (!validMove) {
 				//reading data from socket <unistd.h>
 				read(sock, serverBuffer, BUFFER_LENGTH);
 				if (strcmp(serverBuffer, errorMsg) == 0)
 				{
 					printf("%s", serverBuffer);
-					printf("ERROR Insert cordinates from 1 to 9 or 69 for exit:  \n position: ");
-					scanf("%d", &position);
+
+					position = checkInput();
 					write(sock, &position, ARRAY_LENGTH);
-					
 				}
 				else {
-					something = 1;
+					validMove = 1;
 				}
-				
-				
 			}
 			printf("Server has sent the following data: \n %s\n", serverBuffer);
 

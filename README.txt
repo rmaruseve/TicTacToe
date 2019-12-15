@@ -4,9 +4,9 @@ Compilation of client:
 	gcc k_s_definitions.c k_s_client.c -o k_s_client
 
 Starting server:
-	./k_s_server 16000
+	./k_s_server 15000
 Starting client:
-	./k_s_client localhost 15100
+	./k_s_client localhost 15000
 	
 Exit the application:
-	the client enters the message ":end"
+	the client enters the message: 69
