@@ -9,4 +9,4 @@ Starting client:
 	./k_s_client localhost 15000
 	
 Exit the application:
-	the client enters the message: 69
+	the client enters x: 69

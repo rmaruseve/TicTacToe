@@ -38,54 +38,11 @@ void getServerMove(void)
 
 }
 
-int getClientMove(int position)
+int getClientMove(int x, int y)
 {
 	printf("Client is playing...\n");
-	int x, y;
-	//x--; y--;
-	if (position == 1) {
-		x = 0;
-		y = 0;
-	}
-	else if (position == 1) {
-		x = 0;
-		y = 0;
-	}
-	else if (position == 2) {
-		x = 0;
-		y = 1;
-	}
-	else if (position == 3) {
-		x = 0;
-		y = 2;
-	}
-	else if (position == 4) {
-		x = 1;
-		y = 0;
-	}
-	else if (position == 5) {
-		x = 1;
-		y = 1;
-	}
-	else if (position == 6) {
-		x = 1;
-		y = 2;
-	}
-	else if (position == 7) {
-		x = 2;
-		y = 0;
-	}
-	else if (position == 8) {
-		x = 2;
-		y = 1;
-	}
-	else if (position == 9) {
-		x = 2;
-		y = 2;
-	}
-	else {
-		return -1;
-	}
+	x--; y--;
+	
 
 	if (matrix[x][y] != ' ') {
 		return -1;
@@ -165,7 +122,12 @@ char check(void)
 
 	return ' ';
 }
-
+void readBuffer(int *x, int *y, char *buffer) {
+	*x = atoi(buffer);
+	char* str = strchr(buffer, ';');
+	str++;
+	*y = atoi(str);
+}
 
 int main(int argc, char** argv) {
 	if (argc < 2) {
@@ -217,7 +179,7 @@ int main(int argc, char** argv) {
 
 	strncpy(clientBuffer, "-A--B-Ca\n", BUFFER_LENGTH);
 	clientBuffer[BUFFER_LENGTH] = '\0';
-	int koniec = 0, position, validMove;
+	int koniec = 0, x, y, validMove;
 	//int buffer[ARRAY_LENGTH] = {0};
 	//^^DO NOT CHANGE ORDER^^
 
@@ -231,24 +193,28 @@ int main(int argc, char** argv) {
 		{
 			//reading data from socket <unistd.h>
 			//client move
-			read(clientSocket, &position, ARRAY_LENGTH);
-			printf("Client has sent the following data:\n%d\n", position);
-			if (position != endMsg) {
+			read(clientSocket, clientBuffer, BUFFER_LENGTH);
+			readBuffer(&x, &y, clientBuffer);
+
+			printf("Client has sent the following data:\n%s\n", clientBuffer);
+			if (atoi(clientBuffer) != endMsg) {
 				validMove = 0;
 				while (!validMove) {
-					if (getClientMove(position) == -1)
+					if (getClientMove(x, y) == -1)
 					{
-						printf("ERROR find %d", &position);
+						printf("ERROR find %s", clientBuffer);
 						strcpy(clientBuffer, "");
 						strcpy(clientBuffer, errorMsg);
 						write(clientSocket, clientBuffer, BUFFER_LENGTH);
-						read(clientSocket, &position, BUFFER_LENGTH);
+						read(clientSocket, clientBuffer, BUFFER_LENGTH);
+						readBuffer(&x, &y, clientBuffer);
 
-						if (position == endMsg) {
+
+						if (atoi(clientBuffer) == endMsg) {
 							koniec = 1;
 							validMove = 1;
 						}
-						else  if (getClientMove(position) != -1) {
+						else  if (getClientMove(x, y) != -1) {
 							validMove = 1;
 						}
 					}

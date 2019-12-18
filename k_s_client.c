@@ -8,13 +8,16 @@
 #include <netdb.h>
 #include <unistd.h>
 
-int checkInput(void) {
-	int validInput = 0, position;
+void checkInput(char * buffer) {
+	int validInput = 0;
+	int x = 0, y = 0;
 	while (!validInput) {
-		printf("Insert cordinates from 1 to 9 or %d for exit:  \n position: ", endMsg);
-		scanf("%d", &position);
-		if (position < 1 || position > 9) {
-			if (position == endMsg) {
+		printf("Insert cordinates from 1 to 3 or x = %d for exit:  \n x: ", endMsg);
+		scanf("%d", &x);
+		printf(" y: ");
+		scanf("%d", &y);
+		if ((x < 1 || x > 3) && (y < 1 || y > 3)) {
+			if (x == endMsg) {
 				validInput = 1;
 			}
 			else {
@@ -25,7 +28,7 @@ int checkInput(void) {
 			validInput = 1;
 		}
 	}
-	return position;
+	sprintf(buffer, "%d;%d", x, y);
 }
 
 int main(int argc, char *argv[]) {
@@ -61,44 +64,47 @@ int main(int argc, char *argv[]) {
 	}
 
 	//int buffer[ARRAY_LENGTH] = {0};
-	char serverBuffer[BUFFER_LENGTH + 1];
-	serverBuffer[BUFFER_LENGTH] = '\0';
-	int koniec = 0, validMove, position;
+	char buffer[BUFFER_LENGTH + 1];
+	buffer[BUFFER_LENGTH] = '\0';
+	int koniec = 0, validMove;
 
 	printf("Server connection has been established.\n");
 	printf("This is the game of tic tac toe.\n");
-	read(sock, serverBuffer, BUFFER_LENGTH);
-	printf("Server has sent the following data: \n %s \n ", serverBuffer);
+	read(sock, buffer, BUFFER_LENGTH);
+	printf("Server has sent the following data: \n %s \n ", buffer);
 
 	while (!koniec) {
-		printf("\nwe are starting new game....\n");
-		position = checkInput();
-		write(sock, &position, ARRAY_LENGTH);
+		printf("\nWe are starting new game....\n");
+		checkInput(buffer);
+		write(sock, buffer, BUFFER_LENGTH);
 
-		if (position != endMsg)
+		if (atoi(buffer) != endMsg)
 		{
 			validMove = 0;
 			while (!validMove) {
 				
 				//reading data from socket <unistd.h>
-				read(sock, serverBuffer, BUFFER_LENGTH);
-				if (strcmp(serverBuffer, errorMsg) == 0)
+				read(sock, buffer, BUFFER_LENGTH);
+				if (strcmp(buffer, errorMsg) == 0)
 				{
-					printf("%s", serverBuffer);
+					printf("%s", buffer);
 
-					position = checkInput();
-					write(sock, &position, ARRAY_LENGTH);
+					checkInput(buffer);
+					write(sock, buffer, BUFFER_LENGTH);
 				}
 				else {
 					validMove = 1;
 				}
 			}
-			printf("1st Read...\nServer has sent the following data: \n %s\n", serverBuffer);
-
+			printf("1st Read...\nServer has sent the following data: \n %s\n", buffer);
+			char* str = strchr(buffer, '!');
+			if (str != NULL) {
+				continue;
+			}
 			
 
-			read(sock, serverBuffer, BUFFER_LENGTH);
-			printf("2nd Read...\nServer has sent the following data: \n %s\n", serverBuffer);
+			read(sock, buffer, BUFFER_LENGTH);
+			printf("2nd Read...\nServer has sent the following data: \n %s\n", buffer);
 			koniec = 0;
 		}
 		else {
