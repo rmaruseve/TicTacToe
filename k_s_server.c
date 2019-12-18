@@ -288,6 +288,7 @@ int main(int argc, char** argv) {
 
 			printf("Client won!\nClient can start new game.\n");
 			strcat(clientBuffer, "Client won!\nYou can start new game.\n");
+			write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
 		
 			initMatrix();
 			strcpy(clientBuffer, "");
@@ -311,6 +312,7 @@ int main(int argc, char** argv) {
 
 			printf("DRAW!\nClient can start new game.\n");
 			strcat(clientBuffer, "DRAW! \nYou can start new game.\n");
+			write(clientSocket, clientBuffer, strlen(clientBuffer) + 1);
 		
 			initMatrix();
 			strcpy(clientBuffer, "");
